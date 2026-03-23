@@ -2,38 +2,17 @@
 import Image from "next/image";
 import MemberCard from "../components/shared/memberCard";
 import NewCharacter from "../components/shared/newCharacter";
-import { useCharacters } from "@/hooks/use-Characters";
+import { useCharacters, addCharacter } from "@/hooks/use-Characters";
 import plus from "@/public/plus.svg";
 import { useState } from "react";
-import {Character, inputCharacter} from "@/src/store/useCharactersStore";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-
+import { inputCharacter} from "@/src/store/useCharactersStore";
 
 export default function Home() {
   const[isOpen, setIsOpen] = useState(false);
   const { data, isLoading, error } = useCharacters();
-  const queryClient = useQueryClient();
-    const createCharacterMutation = useMutation({
-        mutationFn: async (newCharacter: inputCharacter) => {
-            const res = await fetch("/api/characters", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(newCharacter),
-            });
+    const addCharacterMutation = addCharacter();
 
-            if (!res.ok) {
-                throw new Error("Failed to create character");
-            }
 
-            return res.json();
-        },
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ["characters"] });
-            setIsOpen(false);
-        },
-    });
   if(isLoading) return <div>Loading</div>;
 
   if(error) return <div>Error: {error.message}</div>;
@@ -57,8 +36,7 @@ export default function Home() {
               isOpen={ isOpen }
               onClose={() => setIsOpen(false)}
               onCreate={(character: inputCharacter) => {
-                  console.log(character);
-                  createCharacterMutation.mutate(character)
+                  addCharacterMutation.mutate(character);
               }}
           />
       </div>

@@ -1,6 +1,6 @@
 // hooks/useCharacters.ts
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import type { Character } from "@/src/store/useCharactersStore";
+import {Character, inputCharacter} from "@/src/store/useCharactersStore";
 
 async function fetchCharacters(): Promise<Character[]> {
     const res = await fetch("/api/characters");
@@ -39,6 +39,30 @@ export function useDeleteCharacter() {
 
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["characters"] });
+        },
+    });
+}
+
+export function addCharacter() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (newCharacter: inputCharacter) => {
+            const res = await fetch("/api/characters", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newCharacter),
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to create character");
+            }
+
+            return res.json();
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ["characters"]});
         },
     });
 }
