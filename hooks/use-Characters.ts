@@ -43,7 +43,7 @@ export function useDeleteCharacter() {
     });
 }
 
-export function addCharacter() {
+export function useAddCharacter() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newCharacter: inputCharacter) => {

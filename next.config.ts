@@ -3,9 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
     images: {
-        domains: [
-            "img1.pnghut.com",
-            "images.unsplash.com",
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "pngimg.com",
+                pathname: "/uploads/**",
+            },
         ],
     },
 };

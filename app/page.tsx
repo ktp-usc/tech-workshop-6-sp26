@@ -2,7 +2,7 @@
 import Image from "next/image";
 import MemberCard from "../components/shared/memberCard";
 import NewCharacter from "../components/shared/newCharacter";
-import { useCharacters, addCharacter } from "@/hooks/use-Characters";
+import { useCharacters, useAddCharacter } from "@/hooks/use-Characters";
 import plus from "@/public/plus.svg";
 import { useState } from "react";
 import { inputCharacter} from "@/src/store/useCharactersStore";
@@ -10,7 +10,7 @@ import { inputCharacter} from "@/src/store/useCharactersStore";
 export default function Home() {
   const[isOpen, setIsOpen] = useState(false);
   const { data, isLoading, error } = useCharacters();
-    const addCharacterMutation = addCharacter();
+    const addCharacterMutation = useAddCharacter();
 
 
   if(isLoading) return <div>Loading</div>;

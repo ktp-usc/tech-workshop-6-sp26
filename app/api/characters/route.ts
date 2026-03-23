@@ -5,13 +5,17 @@ import {readFile} from "node:fs/promises";
 import type {Character} from "@/src/store/useCharactersStore";
 import {writeFile} from "node:fs/promises";
 import {randomUUID} from "node:crypto";
+import { prisma } from "@/lib/prisma"; //
+
 
 export async function GET() {
     try {
         // Example external API OR database call
-        const filePath = path.join(process.cwd(), "data", "characters.json");
-        const fileContents = await readFile(filePath, "utf8");
-        const characters : Character[] = JSON.parse(fileContents);
+        // const filePath = path.join(process.cwd(), "data", "characters.json");
+        // const fileContents = await readFile(filePath, "utf8");
+        const characters = await prisma.character.findMany({
+
+        });
         return NextResponse.json(characters);
     } catch {
         return NextResponse.json(
@@ -22,30 +26,24 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-    try{
+    try {
         const body = await request.json();
-        const {name, image, dateJoined} = body;
+        const { name, image, dateJoined } = body;
 
-        if(!name || !image || !dateJoined){
+        if (!name || !image || !dateJoined) {
             return NextResponse.json(
                 { error: "Missing required fields: name, image, dateJoined" },
                 { status: 400 }
             );
         }
-        const filePath = path.join(process.cwd(), "data", "characters.json");
-        const fileContents = await readFile(filePath, "utf8");
-        const characters: Character[] = JSON.parse(fileContents);
 
-        const newCharacter: Character = {
-            id: randomUUID(),
-            name,
-            image,
-            dateJoined,
-        };
-
-        characters.push(newCharacter);
-
-        await writeFile(filePath, JSON.stringify(characters, null, 2), "utf8");
+        const newCharacter = await prisma.character.create({
+            data: {
+                name,
+                image,
+                dateJoined,
+            },
+        });
 
         return NextResponse.json(newCharacter, { status: 201 });
     } catch (error) {
@@ -54,7 +52,6 @@ export async function POST(request: Request) {
             { error: "Unexpected error creating character" },
             { status: 500 }
         );
-
     }
 }
 
@@ -109,14 +106,16 @@ export async function DELETE(request: Request) {
                 { status: 400 }
             );
         }
-        const filePath = path.join(process.cwd(), "data", "characters.json");
-        const fileContents = await readFile(filePath, "utf8");
-        const characters: Character[] = JSON.parse(fileContents);
+        const existingCharacter = await prisma.character.findUnique({
+            where: { id },
+        });
 
-        const filteredCharacters = characters.filter((c: Character) => c.id !== id);
 
-        await writeFile(filePath, JSON.stringify(filteredCharacters, null, 2), "utf8");
-        return NextResponse.json({ characters });
+        await prisma.character.delete({
+            where: { id },
+        });
+
+        return NextResponse.json({ success: true }, { status: 200 });
     } catch (error) {
         console.error("Error deleting character:", error);
         return NextResponse.json(
