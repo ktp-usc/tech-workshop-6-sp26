@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
                 hostname: "pngimg.com",
                 pathname: "/uploads/**",
             },
+            {
+                protocol: 'https',
+                hostname: 'www.pngkit.com',
+            },
+            {
+                protocol: 'https',
+                hostname: 'toppng.com',
+            }
         ],
     },
 };
