@@ -56,45 +56,6 @@ export async function POST(request: Request) {
 }
 
 
-export async function PUT(request: Request) {
-    try{
-        const body = await request.json();
-        const {id, name, image, dateJoined} = body;
-
-        if(!id){
-            return NextResponse.json(
-                { error: "Missing required fields: id, name, image, dateJoined" },
-                { status: 400 }
-            );
-        }
-        const filePath = path.join(process.cwd(), "data", "characters.json");
-        const fileContents = await readFile(filePath, "utf8");
-        const characters: Character[] = JSON.parse(fileContents);
-
-        const index = characters.findIndex((c: Character) => c.id === id);
-
-        characters[index] = {
-            id,
-            name,
-            image,
-            dateJoined,
-        };
-
-
-        await writeFile(filePath, JSON.stringify(characters, null, 2), "utf8");
-
-        return NextResponse.json(characters[index], { status: 201 });
-    } catch (error) {
-        console.error("Error creating character:", error);
-        return NextResponse.json(
-            { error: "Unexpected error creating character" },
-            { status: 500 }
-        );
-
-    }
-}
-
-
 export async function DELETE(request: Request) {
     try{
         const body = await request.json();

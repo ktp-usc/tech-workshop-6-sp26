@@ -14,7 +14,7 @@ export default function MemberCard({character}: {character: Character}) {
         <div className="bg-white border-2 rounded-2xl p-4">
             <div className="flex px-4 justify-between">
 
-                <button className="cursor-pointer"><Image src={edit} alt="edit"/></button>
+                <button></button>
                 <button className="cursor-pointer" onClick={() => deleteMutation.mutate(character.id)}><Image src={trash} alt="delete"/></button>
             </div>
             <div>
